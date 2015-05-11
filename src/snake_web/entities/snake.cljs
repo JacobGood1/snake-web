@@ -28,9 +28,8 @@
   [this entities]
   (let [height (:height (:game-world entities))
         width (:width (:game-world entities))
-        {[x y] :pos size :size} (get-snake-head this)
-        [x y] [(+ x size) y]]
-    (cond (or (> x width)
+        {[x y] :pos size :size} (get-snake-head this)]
+    (cond (or (> (+ x size) width)
               (< x 0)) true
           (or (> y (- height size))
               (< y 0)) true
