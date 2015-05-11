@@ -1,4 +1,4 @@
-(ns snake-web.entity-snake
+(ns snake-web.entities.snake
   (:require snake-web.dom-wrapper
             [snake-web.input :as input]))
 

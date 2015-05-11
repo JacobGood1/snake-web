@@ -3,8 +3,9 @@
             snake-web.my-cljs-tools
             snake-web.game-engine
             snake-web.input
-            snake-web.entity-gameworld
-            snake-web.entity-snake))
+            [snake-web.entities.gameworld :as game-world]
+            [snake-web.entities.snake :as snake]
+            [snake-web.entities.apple :as apple]))
 
 (defonce game-window (let [[canvas context]
                            (snake-web.dom-wrapper/create-canvas 500 500)]
@@ -37,8 +38,9 @@
 
 (def entities
   (atom
-    {:game-world snake-web.entity-gameworld/game-world
-     :snakes [snake-web.entity-snake/snake]}))
+    {:game-world game-world/game-world
+     :snakes [snake/snake]
+     :apple apple/apple}))
 
 (defn user-game-loop
   []

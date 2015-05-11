@@ -1,8 +1,8 @@
-(ns snake-web.entity-gameworld
+(ns snake-web.entities.gameworld
   (:require-macros [snake-web.imperative-assistance :refer [vars i]])
   (:require snake-web.dom-wrapper))
 
-(def timer-elm (.getElementById js/document "timer"))
+(def timer-elm (.getElementById js/document "timer"));
 
 (def timer
   (vars [last-called-time 0
