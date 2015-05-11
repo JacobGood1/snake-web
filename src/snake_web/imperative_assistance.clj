@@ -1,5 +1,4 @@
 (ns snake-web.imperative-assistance
-  (:refer-clojure :exclude [compile])
   (:require [clojure.core.match :refer [match]]))
 
 
@@ -239,7 +238,6 @@ user defined operators"
   (let [vars (for [[x y] types :when (= y 'array)] x)]
     (clojure.walk/postwalk
       (fn [x]
-        (println x)
         (if (seq (filter #(= x %) vars))
           `(~'aget ~(str "get-" x) 0)
           x))
@@ -265,6 +263,8 @@ user defined operators"
     `(let ~formatted-args
        ~@(replace-marks-with-symbols
            (mark-gets-for-arrays (mark-sets code) types)))))
+
+
 
 ;(vars [x 1] (++! x) x)
 

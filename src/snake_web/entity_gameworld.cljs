@@ -4,6 +4,20 @@
 
 (def timer-elm (.getElementById js/document "timer"))
 
+(def timer
+  (vars [last-called-time 0
+         delta 0
+         total-time 0]
+        (fn []
+          (set! delta (i (.now js/Date) - last-called-time))
+          (set! last-called-time (.now js/Date))
+          (+=! total-time (i 1 / delta))
+          (aset timer-elm
+                "innerHTML"
+                (->> (str total-time)
+                     (re-find #"[0-9]+\.[0-9]{2}")
+                     (str "score: "))))))
+
 
 (def game-world
   (let [world-pixel-size 500]

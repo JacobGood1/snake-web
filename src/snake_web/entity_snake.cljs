@@ -18,6 +18,26 @@
    }
   )
 
+(defn get-snake-head
+  [this]
+  (-> this
+      (:body-segments)
+      (first)))
+
+(defn passed-bounds?
+  [this entities]
+  (let [height (:height (:game-world entities))
+        width (:width (:game-world entities))
+        {[x y] :pos size :size} (get-snake-head this)
+        [x y] [(+ x size) y]]
+    (cond (or (> x width)
+              (< x 0)) true
+          (or (> y (- height size))
+              (< y 0)) true
+          :else false)))
+
+
+
 (defn get-last-segement-pos
   [this]
   (let [last-body-segment (last (:body-segments this))]
@@ -83,6 +103,7 @@
 (defn snake-update
   "Update the snake object."
   [this entities]
+  (println (passed-bounds? this entities))
   (if (= (:move-allowed (:game-world entities)) true)
     ;firstly, update the body of the snake
     (let [last-segment-pos (get-last-segement-pos this)
@@ -108,8 +129,7 @@
         :width size
         :height size
         :fill-style color
-        :context (snake-web.development/game-window :context)
-        ))))
+        :context (snake-web.development/game-window :context)))))
 
 (def snake
   {:body-segments [body-segment

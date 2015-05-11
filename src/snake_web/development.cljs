@@ -42,7 +42,7 @@
 
 (defn user-game-loop
   []
-  ;(snake-web.entity-gameworld/timer)
+  (snake-web.entity-gameworld/timer)
   ;(println (snake-web.game-engine/delta))
   ;(println (snake-web.game-engine/fps))
 
