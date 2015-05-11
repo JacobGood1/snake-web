@@ -4,16 +4,6 @@
 
 (def timer-elm (.getElementById js/document "timer"))
 
-(def timer (vars [last-called-time 0
-                  delta 0
-                  total-time 0]
-                 (fn []
-                   (set! delta (i (.now js/Date) - last-called-time))
-                   (set! last-called-time (.now js/Date))
-                   (+=! total-time (i 10 / delta))
-                   (aset timer-elm "innerHTML" (->> (str "score: " total-time)
-                                                    (take 12)
-                                                    (apply str))))))
 
 (def game-world
   (let [world-pixel-size 500]
@@ -49,10 +39,10 @@
                                     ;(:global-timer this)
                                     )]
                  (conj this
-                   (conj {:delta-accum (if (>= delta-accum 1.0) 0.0 delta-accum)
-                          ;:global-timer global-timer
-                          :move-allowed move-allowed}))))
-   }))
+                       (conj {:delta-accum (if (>= delta-accum 1.0) 0.0 delta-accum)
+                              ;:global-timer global-timer
+                              :move-allowed move-allowed}))))
+     }))
 
 
 

@@ -8,10 +8,8 @@
    :pos [100 100]
    :size 25
    :step-size 25
-   :direction :x
 
    ;;GRAPHICS
-   ;color
    :fill-style (snake-web.dom-wrapper/rgba 0 255 0 1.0)
    ;stroke line width
    ;:line-width 3
@@ -68,7 +66,6 @@
     (let [head (snake-head-update this)
           ;update snake's tail, based off it's un-atlered head position
           tail (snake-tail-update (:body-segments this))]
-
       (assoc this :body-segments (conj (seq tail) head)))
     ;snake is not allowed to move, return un-altered snake.
 )
@@ -77,9 +74,11 @@
   [this pos]
   ;{pre: [(vector? pos)]}
   (let [body-segments (:body-segments this)
-        new-segment (assoc body-segment :pos pos)
-        updated-body-segments (conj body-segments new-segment)]
-    (assoc this :body-segments updated-body-segments)))
+        color (- (:color this) 5)
+        new-segment (assoc body-segment :pos pos :fill-style (snake-web.dom-wrapper/rgba 0 color 0 1.0))
+        updated-body-segments (conj (vec body-segments) new-segment)
+        snake (assoc this :body-segments updated-body-segments :color color)]
+    snake))
 
 (defn snake-update
   "Update the snake object."
@@ -113,7 +112,11 @@
         ))))
 
 (def snake
-  {:body-segments [body-segment]
+  {:body-segments [body-segment
+                   (assoc body-segment :pos [(- 100 25) 100])
+                   (assoc body-segment :pos [(- (- 100 25) 25) 100])
+                   (assoc body-segment :pos [(- (- (- 100 25) 25) 25) 100])]
    :apple-collected true ;default: false
+   :color 255
    :update snake-update
    :render snake-render})
