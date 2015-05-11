@@ -2,7 +2,7 @@
   (:require-macros [snake-web.imperative-assistance :refer [vars i]])
   (:require snake-web.dom-wrapper))
 
-(def timer-elm (.getElementById js/document "timer"))
+(def timer-elm (.getElementById js/document "timer"));
 
 
 (def game-world

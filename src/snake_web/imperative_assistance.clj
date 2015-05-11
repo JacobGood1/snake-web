@@ -9,7 +9,7 @@
   (let [format (fn [x] (symbol (str ".-" (apply str (drop 1 (str x))))))]
     `(do
        ~@(for [[x y] (partition 2 args)]
-           `(set! ~(list (format x) y) ~object)))))
+           `(set! ~(list (format x) y) ~object)))));
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
