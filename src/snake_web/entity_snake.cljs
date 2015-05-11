@@ -65,15 +65,13 @@
   "Update the entire body of the snake."
   [this entities]
   ;update snake's head
-  (if (= (:move-allowed (:game-world entities)) true)
     (let [head (snake-head-update this)
           ;update snake's tail, based off it's un-atlered head position
           tail (snake-tail-update (:body-segments this))]
 
       (assoc this :body-segments (conj (seq tail) head)))
-
     ;snake is not allowed to move, return un-altered snake.
-    this))
+)
 
 (defn append-segment
   [this pos]
@@ -86,14 +84,17 @@
 (defn snake-update
   "Update the snake object."
   [this entities]
-  ;firstly, update the body of the snake
-  (let [last-segment-pos (get-last-segement-pos this)
-        snake (snake-body-update this entities)]
-    ;check if an apple has been collected, if so, append a new segment
-    (if (:apple-collected snake)
-      (append-segment snake last-segment-pos)
-      ;no apple was collected, return snake
-      snake))
+  (if (= (:move-allowed (:game-world entities)) true)
+    ;firstly, update the body of the snake
+    (let [last-segment-pos (get-last-segement-pos this)
+          snake (snake-body-update this entities)]
+      ;check if an apple has been collected, if so, append a new segment
+      (if (:apple-collected snake)
+        (append-segment snake last-segment-pos)
+        ;no apple was collected, return snake
+        snake))
+    ;movement not allowed, return snake
+    this)
   )
 
 (defn snake-render
