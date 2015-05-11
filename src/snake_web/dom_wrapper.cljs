@@ -7,8 +7,6 @@
                     :p "p"
                     :canvas "canvas"})
 
-(def color {:black "black"})
-
 (defn rgba
   "Returns rgba in a string format."
   [r g b a]
