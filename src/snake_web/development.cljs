@@ -1,11 +1,10 @@
 (ns snake-web.development
   (:require snake-web.dom-wrapper
-    snake-web.my-cljs-tools
-    snake-web.game-engine
-    snake-web.input
-
-    snake-web.entity-gameworld
-    snake-web.entity-snake))
+            snake-web.my-cljs-tools
+            snake-web.game-engine
+            snake-web.input
+            snake-web.entity-gameworld
+            snake-web.entity-snake))
 
 (defonce game-window (let [[canvas context]
                            (snake-web.dom-wrapper/create-canvas 500 500)]
@@ -43,6 +42,7 @@
 
 (defn user-game-loop
   []
+  (snake-web.entity-gameworld/timer)
   ;(println (snake-web.game-engine/delta))
   ;(println (snake-web.game-engine/fps))
 

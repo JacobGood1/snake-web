@@ -1,5 +1,19 @@
 (ns snake-web.entity-gameworld
+  (:require-macros [snake-web.imperative-assistance :refer [vars i]])
   (:require snake-web.dom-wrapper))
+
+(def timer-elm (.getElementById js/document "timer"))
+
+(def timer (vars [last-called-time 0
+                  delta 0
+                  total-time 0]
+                 (fn []
+                   (set! delta (i (.now js/Date) - last-called-time))
+                   (set! last-called-time (.now js/Date))
+                   (+=! total-time (i 10 / delta))
+                   (aset timer-elm "innerHTML" (->> (str "score: " total-time)
+                                                    (take 12)
+                                                    (apply str))))))
 
 (def game-world
   (let [world-pixel-size 500]
