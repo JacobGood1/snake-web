@@ -1,5 +1,6 @@
 (ns snake-web.entities.snake
   (:require snake-web.dom-wrapper
+            snake-web.entities.gameworld
             [snake-web.input :as input]))
 
 (def body-segment
@@ -24,6 +25,13 @@
       (:body-segments)
       (first)))
 
+(defn apple-collision?
+  [this entities]
+  ;(println (:apple entities))
+  (let [apple (:apple entities)
+        snake-head (get-snake-head this)]
+        (= (:pos apple) (:pos snake-head))))
+
 (defn passed-bounds?
   [this entities]
   (let [height (:height (:game-world entities))
@@ -35,7 +43,19 @@
               (< y 0)) true
           :else false)))
 
+(defn collision-with-self?
+  [{[head & body-segments] :body-segments}]
+  (loop [body-segments body-segments]
+    (if (seq body-segments)
+      (if (= (:pos head) (:pos (first body-segments)))
+        true
+        (recur (rest body-segments)))
+      false)))
 
+(defn snake-collision-death?
+  [this entities]
+  (assoc this :alive? (not (or (passed-bounds? this entities)
+                               (collision-with-self? this)))))
 
 (defn get-last-segement-pos
   [this]
@@ -99,22 +119,45 @@
         snake (assoc this :body-segments updated-body-segments :color color)]
     snake))
 
+(defn snake-movement-update
+  [this entities]
+  (if (= (:move-allowed (:game-world entities)) true)
+    ;update the position of the snake
+    (snake-body-update this entities)
+    ;movement not allowed, return snake
+    this))
+
+(defn snake-apple-update
+  [this entities last-segement-pos]
+  ;check if an apple has been collected, if so, append a new segment
+  ;(println (apple-collision? this entities))
+
+  ;TODO study
+  ;without this if statement, both the apple's position and snake's appendage update would
+  ;happen twice
+  (if (not (:apple-collected this)) ;<-- fixes double update glitch
+    (if (apple-collision? this entities)
+      (do
+        (snake-web.entities.gameworld/timer)
+        (assoc (append-segment this last-segement-pos)
+          :apple-collected true
+          :travel-speed (- (:travel-speed this) (* (:travel-speed-dec this) (:travel-speed this)))))
+      ;no apple was collected, return snake
+      (assoc this :apple-collected false))
+    (assoc this :apple-collected false)))
+
 (defn snake-update
   "Update the snake object."
   [this entities]
-  (println (passed-bounds? this entities))
-  (if (= (:move-allowed (:game-world entities)) true)
-    ;firstly, update the body of the snake
+  ;(println (apple-collision? this entities))
+  ;(println (passed-bounds? this entities))
+  (if (:alive? this)
     (let [last-segment-pos (get-last-segement-pos this)
-          snake (snake-body-update this entities)]
-      ;check if an apple has been collected, if so, append a new segment
-      (if (:apple-collected snake)
-        (append-segment snake last-segment-pos)
-        ;no apple was collected, return snake
-        snake))
-    ;movement not allowed, return snake
-    this)
-  )
+          snake (snake-movement-update this entities)
+          snake (snake-apple-update snake entities last-segment-pos)
+          snake (snake-collision-death? snake entities)]
+      snake)
+    this))
 
 (defn snake-render
   [this]
@@ -132,10 +175,11 @@
 
 (def snake
   {:body-segments [body-segment
-                   (assoc body-segment :pos [(- 100 25) 100])
-                   (assoc body-segment :pos [(- (- 100 25) 25) 100])
-                   (assoc body-segment :pos [(- (- (- 100 25) 25) 25) 100])]
-   :apple-collected true ;default: false
+                   ]
+   :alive? true
+   :travel-speed 0.5
+   :travel-speed-dec 0.05
    :color 255
+   :apple-collected false
    :update snake-update
    :render snake-render})

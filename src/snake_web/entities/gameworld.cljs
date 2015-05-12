@@ -5,19 +5,20 @@
 (def timer-elm (.getElementById js/document "timer"));
 
 (def timer
-  (vars [last-called-time 0
-         delta 0
-         total-time 0]
+  (vars [score 0]
+        (aset timer-elm
+              "innerHTML"
+              (str score))
         (fn []
-          (set! delta (i (.now js/Date) - last-called-time))
-          (set! last-called-time (.now js/Date))
-          (+=! total-time (i 1 / delta))
+          (+=! score 10)
           (aset timer-elm
                 "innerHTML"
-                (->> (str total-time)
-                     (re-find #"[0-9]+\.[0-9]{2}")
-                     (str "score: "))))))
+                (str score)))))
 
+(defn get-cells
+  [cells]
+  (for [[key val] cells]
+    val))
 
 (def game-world
   (let [world-pixel-size 500]
@@ -44,16 +45,18 @@
      :gradient-point [0 0]
 
      :update (fn [this entities]
-               (let [delta-accum (+ (:delta-accum this) (snake-web.game-engine/delta))
-
-                     move-allowed (if (>= delta-accum 1.0)
+               (let [snake (first (:snakes entities))
+                     snake-travel-speed (:travel-speed snake);0.1
+                     delta-accum (+ (:delta-accum this) (snake-web.game-engine/delta))
+                     move-allowed (if (>= delta-accum snake-travel-speed) ;speed 1.0
                                     true
                                     false
                                     ;(inc (:global-timer this))
                                     ;(:global-timer this)
                                     )]
+
                  (conj this
-                       (conj {:delta-accum (if (>= delta-accum 1.0) 0.0 delta-accum)
+                       (conj {:delta-accum (if (>= delta-accum snake-travel-speed) 0.0 delta-accum)
                               ;:global-timer global-timer
                               :move-allowed move-allowed}))))
      }))

@@ -26,6 +26,7 @@
 
   (if (vector? value)
 
+    ;(assoc entities :game-world )
     {key (vec (for [obj value]
                 ((:update obj) obj entities)))}
 
@@ -42,20 +43,22 @@
      :snakes [snake/snake]
      :apple apple/apple}))
 
+(defn clear-screen
+  []
+  (.clearRect
+    (game-window :context)
+    0 0
+    (.-width (game-window :canvas))
+    (.-height (game-window :canvas))))
+
 (defn user-game-loop
   []
-  (snake-web.entities.gameworld/timer)
+  ;(snake-web.entities.gameworld/timer)
   ;(println (snake-web.game-engine/delta))
   ;(println (snake-web.game-engine/fps))
 
   ;;clear canves
-  ;(comment
-    (.clearRect
-      (game-window :context)
-      0 0
-      (.-width (game-window :canvas))
-      (.-height (game-window :canvas)))
-    ;)
+  (clear-screen)
 
   ;;traverse through every map and invoke all update fns.
   (swap! entities (fn [obj]
@@ -71,6 +74,17 @@
         (if (contains? obj :render) ((:render obj) obj)))
 
       (if (contains? value :render) ((:render value) value))))
+
+  ;quick hack for rendering GAME OVER text ontop of every element in the scene
+  ;this should exist within the gameworld's update fn
+  (if (not (:alive? (first (:snakes @entities))))
+    (do
+      (set! (.-font (:context snake-web.development/game-window)) "50px Arial")
+      (set! (.-fillStyle (:context snake-web.development/game-window)) "blue")
+      (.fillText (:context snake-web.development/game-window)
+                 "GAME OVER"
+                 (- (/ 500 2) 150)
+                 (/ 500 2))))
 
   ;(println @entities)
   ;(println (:delta-accum (:game-world @entities)))
